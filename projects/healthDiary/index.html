@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Health Journal</title>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script src="https://unpkg.com/vue-router@4/dist/vue-router.global.js"></script>
+  <script src="js/index.js" defer></script>
+  <link rel="stylesheet" href="css/index.css">
+</head>
+
+<body>
+  <div id="app">
+    <header>📝 My Health Journal</header>
+
+    <nav>
+      <button :class="{ active: page === 'home' }" @click="page = 'home'">홈</button>
+      <button :class="{ active: page === 'journal' }" @click="page = 'journal'">일지 보기</button>
+      <button :class="{ active: page === 'write' }" @click="page = 'write'">일지 작성</button>
+    </nav>
+
+    <div class="container">
+      <!-- 홈 -->
+      <div v-show="page === 'home'">
+        <h2>오늘의 한 마디</h2>
+        <img :src="randomQuote.imageURL" alt="선수 이미지" class="quote-person-img">
+        <p class="quote-person-name">{{ randomQuote.name }}</p>
+        <p class="quote-content">{{ randomQuote.quote }}</p>
+        <p class="quote-content">{{ randomQuote.quoteKorean }}</p>
+      </div>
+
+      <!-- 일지 보기 -->
+      <div v-show="page === 'journal'">
+        <h2>운동 일지 📓</h2>
+        <div v-if="entries.length === 0">작성된 일지가 없습니다.</div>
+        <div v-for="(entry, index) in reversedEntries" :key="index" class="entry">
+          <div class="diary-head-wrap">
+            <h3>{{ entry.title }}</h3>
+            <small>{{ entry.date }}</small>
+          </div>
+          <div v-for="(exercise, exIndex) in entry.content.exercises" :key="exIndex">
+            <h4>{{ exercise }}</h4>
+            <div class="flex-row">
+              <div class="set-kg-wrap" v-for="(set, setIndex) in entry.content.setsArray[exIndex]" :key="setIndex">
+                <div class="counts-per-set-wrap">{{ set.split(":")[0] }}</div>
+                <p>{{ set.split(":")[1] }} kg</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 일지 작성 -->
+      <div v-show="page === 'write'">
+        <h2>운동 기록 작성 🏋️</h2>
+        <!-- 운동 선택 라인 -->
+        <div class="form-group flex-row align-center">
+          <!-- 카테고리 선택 -->
+          <select v-model="selectedCategory">
+            <option disabled value="">카테고리 선택</option>
+            <option v-for="(exList, category) in exerciseCategories" :key="category" :value="category">
+              {{ category }}
+            </option>
+          </select>
+
+          <!-- 운동 선택 -->
+          <select v-model="newExercise.name" :disabled="!selectedCategory">
+            <option disabled value="">운동 선택</option>
+            <option v-for="exercise in exerciseCategories[selectedCategory] || []" :key="exercise" :value="exercise">
+              {{ exercise }}
+            </option>
+          </select>
+
+          <input type="text" v-model="newExercise.nameDetail" class="exercise-name-detail"
+            placeholder="운동 상세 ex) 프리|스미스">
+        </div>
+
+        <div class="form-group">
+          <label>세트 수</label>
+          <input v-model.number="newExercise.sets" type="number" placeholder="예: 3" />
+        </div>
+
+        <!-- 세트별 반복 수와 중량 입력 -->
+        <div v-show="newExercise.details.length" class="set-repeat-box">
+          <div v-for="(detail, idx) in newExercise.details" :key="idx" class="flex-row">
+            <div class="input-box">
+              <label>{{ idx + 1 }}세트 반복 회수</label>
+              <input v-model.number="detail.reps" type="number" placeholder="ex: 10" />
+            </div>
+            <div class="input-box">
+              <label>{{ idx + 1 }}세트 중량(kg)</label>
+              <input v-model.number="detail.weight" type="number" placeholder="ex: 60" />
+            </div>
+          </div>
+        </div>
+
+        <button class="submit-btn" @click="addExercise">+ 운동 추가</button>
+
+        <hr style="margin: 20px 0; border-color: #333" />
+
+        <h3>📋 오늘 운동 목록</h3>
+        <div v-show="form.exercises.length === 0" class="no-exercise-text">운동을 추가해 주세요.</div>
+        <div v-for="(ex, idx) in form.exercises" :key="idx" class="entry">
+          <strong>{{ ex.name }}</strong>
+          <button @click="removeExercise(idx)" class="x-btn">X</button>
+          <br />
+          <div class="flex-row">
+            <div class="set-kg-wrap" v-for="(d, i) in ex.details" :key="i">
+              <div class="counts-per-set-wrap">{{ d.split(":")[0] }}</div>
+              <p>{{ d.split(":")[1] }} kg</p>
+            </div>
+          </div>
+        </div>
+
+        <button class="submit-btn" @click="saveEntry">일지 저장</button>
+      </div>
+
+    </div>
+  </div>
+</body>
+
+</html>

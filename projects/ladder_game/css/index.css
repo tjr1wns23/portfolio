@@ -1,0 +1,64 @@
+html,
+body {
+  padding: 0;
+  margin: 0;
+  text-align: center;
+}
+
+ul,
+li {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.setting-wrap {
+  margin-top: 48px;
+}
+
+#div1 {
+  display: inline-block;
+  position: relative;
+}
+
+#div1>ul {
+  display: inline-block;
+  position: relative;
+  width: 100%;
+}
+
+#div1>ul>li {
+  display: inline-block;
+  text-align: center;
+}
+
+#div1>ul>li>input {
+  width: 90%;
+  text-align: center;
+}
+
+#div1>ul>button {
+  width: 76px;
+  margin: 0 2px;
+  text-align: center;
+}
+
+#ladderboder {
+  position: relative;
+  float: left;
+}
+
+#ladderbody {
+  position: relative;
+  display: inline-block;
+}
+
+#ladderresult {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+input {
+  border: 1px solid;
+}

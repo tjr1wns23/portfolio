@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>룰렛 게임 - 프로젝트 정보</title>
+  <link rel="stylesheet" href="css/project_info.css" />
+</head>
+
+<body>
+  <div class="container">
+    <h1 class="title">
+      <svg width="25" height="25" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="60" cy="60" r="60" fill="#ddd" />
+        <!-- 첫 번째 부채꼴 -->
+        <path d="M60 60 L120 60 A60 60 0 0 1 30 111.961 Z" fill="#FF6347" />
+        <!-- 두 번째 부채꼴 -->
+        <path d="M60 60 L30 111.961 A60 60 0 0 1 30 8.038 Z" fill="#3CB371" />
+        <!-- 세 번째 부채꼴 -->
+        <path d="M60 60 L30 8.038 A60 60 0 0 1 120 60 Z" fill="#1E90FF" />
+      </svg>
+      룰렛 게임
+    </h1>
+
+    <section>
+      <h2 class="section-title">📝 프로젝트 개요</h2>
+      <p>
+        Vue.js로 구현한 룰렛 게임입니다.
+        CSS 스타일을 동적으로 조작하여 룰렛이 회전하는 효과를 구현하고, JavaScript 함수로 결과를 계산하고 표시하는 구조로 설계했습니다.
+      </p>
+    </section>
+
+    <section>
+      <h2 class="section-title">🛠️ 사용 기술</h2>
+      <ul>
+        <li><code>Vue.js</code></li>
+        <li><code>CSS conic-gradient</code></li>
+        <li><code>JavaScript</code>를 통한 스타일 및 회전 로직 제어</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2 class="section-title">📌 주요 기능</h2>
+      <ul>
+        <li>참여 인원 수 변경 기능</li>
+        <li>상품 항목 입력 및 수정</li>
+        <li>랜덤 룰렛 결과 출력</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2 class="section-title">🔍 개발 포인트</h2>
+      <ul class="project-points">
+        <li>
+          <strong>UI/UX를 고려한 개발</strong>
+          <p>
+            참여 인원 수를 조정할 경우, 기존에 입력한 데이터가 유지되도록 UX를 고려하여 설계하였으며,
+            데이터 초기화 없이 사용자가 편리하게 조작할 수 있도록 반응형 입력 구조를 구현했습니다.
+          </p>
+        </li>
+        <li>
+          <strong>룰렛 세팅 알고리즘 구현</strong>
+          <p>
+            참여 인원 수에 따라 룰렛을 정확하게 분할할 수 있도록 부동소수점 오차를 고려하여 계산한 후 <code>conic-gradient</code>를 활용하여 룰렛을 구분했습니다.
+            또한 상품 항목을 입력하면 즉시 반영되도록 Vue의 반응형 특성을 이용해 구현했습니다.
+          </p>
+        </li>
+        <li>
+          <strong>룰렛 회전 알고리즘 구현</strong>
+          <p>
+            룰렛이 돌아가는 동안 중복 클릭이 발생하지 않도록 클릭 이벤트를 제어했습니다.<br>
+            랜덤한 회전 각도에 원하는 결과를 더해 자연스럽고 예측 불가능한 회전을 구현했습니다.<br>
+            회전값이 지속적으로 증가하지 않도록 % 360으로 값을 관리하고, CSS 중첩 회전 문제를 해결하여 부드럽고 안정적인 동작을 보장했습니다.
+          </p>
+        </li>
+      </ul>
+
+    </section>
+
+    <section>
+      <h2 class="section-title">💭 느낀 점</h2>
+      <p>
+        이번 프로젝트에서는 <strong>conic-gradient를 활용한 CSS 시각화</strong>에 집중하면서,
+        룰렛처럼 원형 구조를 어떻게 표현할 수 있을지 직접 구현해볼 수 있었습니다.
+      </p>
+
+      <p>
+        또한 사용자 입장에서 편하게 조작할 수 있도록 하는 부분을 고민하면서,
+        기능만 만드는 게 아니라 <strong>UX도 함께 고려</strong>하는 부분을 신경썼습니다.
+      </p>
+
+      <p>
+        룰렛 각도 계산이나 중복 클릭 방지 같은 기능을 개발하면서,
+        작은 부분 하나가 완성도에 얼마나 영향을 주는지도 경험할 수 있었습니다.
+      </p>
+
+      <p>
+        앞으로도 <strong>사용자가 보기 편하고, 쓰기 쉬운 UI</strong>를 만들 수 있도록
+        이런 식의 고민과 시도를 계속해보고 싶습니다.
+      </p>
+
+
+    </section>
+
+    <div class="home-link">
+      <a href="index.html">👉 직접 해보기</a>
+    </div>
+  </div>
+</body>
+
+</html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="css/index.css">
+  <title>사다리게임</title>
+  <script src="js/index.js"></script>
+
+</head>
+
+<body>
+
+  <div class="setting-wrap">
+    <input type="number" id="num" placeholder="참여인원" value="3" />
+    <button onclick="numberCheck()">참여인원</button>
+    <!-- <button onclick="showResult()">결과확인</button> -->
+    <button onclick="randomSetting()">랜덤생성</button>
+    <button onclick="svgReset()">초기화</button>
+    <span>속도 조절</span>
+    <input type="range" min="0" max="6" value="3" onchange="ladderSpeed = Number(this.value)">
+  </div>
+
+  <div id="div1">
+    <ul id="ladderheader"></ul>
+    <div id="ladderbody">
+      <div id="ladderboder"></div>
+      <div id="ladderresult"></div>
+    </div>
+    <ul id="ladderfooter"></ul>
+    <div id="resultuser"></div>
+  </div>
+</body>
+
+</html>

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WebSocket Chatting</title>
+  <link rel="icon" href="./css/favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/xeicon/2/xeicon.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/index.css">
+  <!-- <script type="module" defer src="js/app.js"></script> -->
+
+</head>
+
+<body>
+  <main class="contents-container">
+    <section class="contents-wrap">
+      <audio id="alertAudio">
+        <source src="./res/Messenger_Facebook.mp3" type="audio/mp3">
+      </audio>
+      <div class="name-setting-wrap">
+        닉네임: <input type="text" id="nickName">
+        <button onclick="sendChatting();">send</button>
+        <button onclick="clearChatting();">clear</button>
+        <input id="soundCtlCheckBox" type="checkbox" hidden>
+        <i id="soundOnIcon" class="xi-bell-o" onclick="soundCtl();"></i>
+        <i id="soundOffIcon" class="xi-bell-off-o" style="display: none;" onclick="soundCtl();"></i>
+      </div>
+
+
+      <div class="chat-board" id="chatHistory"></div>
+      <input type="text" id="message" class="chat-input-box"
+        onkeydown="javascript: if (event.keyCode == 13) {sendChatting();}">
+    </section>
+  </main>
+</body>
+<script>
+
+  const ws = new WebSocket("ws://127.0.0.1:8001");
+  const colonEncode = "COLON:::COLON";
+  const documentTitle = document.title;
+  const messageAudio = document.getElementById("alertAudio");
+  let userFocused = true;
+  let unreadMessageCount = 0;
+  let tempMyMsg = "";
+
+  document.addEventListener("DOMContentLoaded", function () {
+    if (document.getElementById("soundCtlCheckBox").checked) {
+      soundOffIcon.style.display = "none";
+      soundOnIcon.style.display = "inline-block";
+    } else {
+      soundOffIcon.style.display = "inline-block";
+      soundOnIcon.style.display = "none";
+    }
+  });
+
+  document.addEventListener("visibilitychange", function () {
+    if (document.hidden) {
+      userFocused = false;
+    } else {
+      userFocused = true;
+      unreadMessageCount = 0;
+      document.title = documentTitle;
+    }
+  });
+
+  // 웹 소켓 연결 이벤트
+  ws.onopen = function () {
+    // alert("웹소켓 서버와 연결에 성공했습니다.");
+  };
+
+  // 웹 소켓 메세지 수신
+  ws.onmessage = function (event) {
+
+    let receivedData = JSON.parse(event.data);
+
+    if (receivedData.type == "msg") {
+      let serverMessageWrap = document.createElement('div');
+      let serverMessage = document.createElement('p');
+
+      let sendUserNickName = receivedData.content.split(colonEncode)[0];
+      let messageTxt;
+      if (tempMyMsg == receivedData.content) {
+        serverMessageWrap.classList.add("my-message");
+        messageTxt = receivedData.content.split(colonEncode)[1];
+        tempMyMsg = "";
+      } else {
+        serverMessageWrap.classList.add("someone-message");
+        messageTxt = receivedData.content.replace(colonEncode, ":");
+        if (!userFocused) {
+          unreadMessageCount++;
+          if (document.getElementById("soundCtlCheckBox").checked) {
+            messageAudio.play();
+          }
+        }
+      }
+
+      serverMessage.innerHTML = messageTxt;
+      serverMessageWrap.append(serverMessage);
+
+      let isBottom = true;
+      const chatHistory = document.getElementById("chatHistory");
+
+      chatHistory.appendChild(serverMessageWrap);
+
+      if (isBottom) {
+        chatHistory.scrollTop = chatHistory.scrollHeight;
+      }
+
+      if (unreadMessageCount > 0) {
+        if (unreadMessageCount > 99) {
+          document.title = "(99+) " + documentTitle;
+        } else {
+          document.title = "(" + unreadMessageCount + ") " + documentTitle;
+        }
+      }
+    } else if (receivedData.type == "notice") {
+      let serverMessageWrap = document.createElement('div');
+      let serverMessage = document.createElement('p');
+
+      serverMessageWrap.classList.add("notice-message");
+      messageTxt = receivedData.content.replace(colonEncode, ":");
+
+      serverMessage.innerHTML = messageTxt;
+      serverMessageWrap.append(serverMessage);
+
+      const chatHistory = document.getElementById("chatHistory");
+
+      chatHistory.appendChild(serverMessageWrap);
+    }
+
+  };
+
+  // 웹 소켓 연결 종료
+  ws.onclose = function () {
+    alert("웹소켓 서버와 연결이 종료되었습니다.");
+  };
+
+  // 오류 발생
+  ws.onerror = function (error) {
+    alert(JSON.stringify(error));
+  };
+
+  function soundCtl() {
+    const soundOffIcon = document.getElementById("soundOffIcon");
+    const soundOnIcon = document.getElementById("soundOnIcon");
+    document.getElementById("soundCtlCheckBox").checked = !document.getElementById("soundCtlCheckBox").checked;
+    if (document.getElementById("soundCtlCheckBox").checked) {
+      soundOffIcon.style.display = "none";
+      soundOnIcon.style.display = "inline-block";
+    } else {
+      soundOffIcon.style.display = "inline-block";
+      soundOnIcon.style.display = "none";
+    }
+  }
+
+  function sendChatting() {
+
+    // websocket readyState -> 0: connecting, 1: open, 2: closing, 3: closed
+    if (ws.readyState == 1) {
+
+      if (!document.getElementById("nickName").value) {
+        alert("닉네임을 입력하세용");
+        return;
+      }
+
+      let text = `${document.getElementById("nickName").value}${colonEncode} ${document.getElementById("message").value}`;
+      tempMyMsg = text;
+
+      ws.send(text) // 서버에 데이터 전송
+
+      document.getElementById("message").value = null;
+
+    } else {
+      alert("연결 끊김 상태입니다.");
+    }
+  }
+
+  function clearChatting() {
+    document.getElementById("chatHistory").innerHTML = "";
+  }
+
+</script>
+
+</html>

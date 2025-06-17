@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>사다리게임 - 프로젝트 정보</title>
+  <link rel="stylesheet" href="css/project_info.css" />
+</head>
+
+<body>
+  <div class="container">
+    <h1 class="title">🪜 사다리 게임</h1>
+
+    <section>
+      <h2 class="section-title">📝 프로젝트 개요</h2>
+      <p>
+        Vanilla JS로 구현한 사다리 게임입니다. SVG를 활용하여 경로를 시각적으로 표현하고 클릭 시 랜덤한 결과가 도출되도록 설계했습니다.
+        DOM 조작과 이벤트 처리, SVG 동적 렌더링 등 다양한 웹 기술을 실습하는 데 중점을 두었습니다.
+      </p>
+    </section>
+
+    <section>
+      <h2 class="section-title">🛠️ 사용 기술</h2>
+      <ul>
+        <li><code>Vanilla JS (ES6+)</code></li>
+        <li>SVG 요소 동적 조작</li>
+        <li><code>requestAnimationFrame</code> 기반 애니메이션 구현</li>
+        <li>좌표 기반 경로 계산 및 상태 관리 로직 설계</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2 class="section-title">📌 주요 기능</h2>
+      <ul>
+        <li>참여인원 변경 및 색상 자동 지정</li>
+        <li>랜덤 사다리 생성</li>
+        <li>결과 동작 속도 조절</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2 class="section-title">🔍 개발 포인트</h2>
+      <ul class="project-points">
+        <li>
+          <strong>SVG 좌표 기반 애니메이션 구현 경험</strong>
+          <p>
+            <code>requestAnimationFrame</code>을 사용해 SVG <code>&lt;circle&gt;</code> 요소가 사다리 경로를 따라 부드럽게 움직이도록 구현했습니다.
+            수직과 수평 전환 구간에서 자연스러운 이동을 위해 복잡한 좌표 계산이 필요했습니다.
+          </p>
+        </li>
+        <li>
+          <strong>랜덤 사다리 경로 생성 알고리즘 구현</strong>
+          <p>
+            사다리의 가로 라인이 겹치지 않도록 무작위 좌표를 생성하고, 이를 정렬 및 필터링하여 SVG <code>&lt;line&gt;</code> 요소로 그리는 알고리즘을 직접 설계했습니다.
+          </p>
+        </li>
+        <li>
+          <strong>애니메이션 중복 방지 처리</strong>
+          <p>
+            여러 사용자가 동시에 클릭하더라도 애니메이션이 충돌하지 않도록 사용자별로 전역 상태(<code>animationMap</code>)를 관리하여 중복 실행을 방지했습니다.
+          </p>
+        </li>
+        <li>
+          <strong>좌표 계산 및 경로 추적 로직 설계</strong>
+          <p>
+            현재 위치에서 다음 이동 지점까지의 <code>dx</code> 및 <code>dy</code>를 계산해 방향을 판단하고,
+            목표 지점에 도달할 때까지 좌표를 프레임 단위로 갱신하는 구조를 구성했습니다.
+          </p>
+        </li>
+      </ul>
+
+    </section>
+
+    <section>
+      <h2 class="section-title">💭 느낀 점</h2>
+      <p>
+        SVG를 활용해 좌표 기반의 애니메이션을 구현하면서 단순한 CSS 애니메이션과는 다른 접근 방식이 필요하다는 것을 깨달았습니다.
+        특히 좌표 이동을 프레임 단위로 제어하고, 경로를 계산해 점을 이동시키는 과정에서 수학적 사고와 논리적 설계 능력이 중요하다는 걸 실감했습니다.
+      </p>
+      <p>
+        사다리 경로를 랜덤으로 생성하는 알고리즘을 구현하면서 조건 처리와 중복 방지에 대해 많이 고민했고,
+        그 과정을 통해 알고리즘 구현 실력을 향상 시킬 수 있었습니다.
+      </p>
+    </section>
+
+    <div class="home-link">
+      <a href="index.html">👉 직접 해보기</a>
+    </div>
+  </div>
+</body>
+
+</html>

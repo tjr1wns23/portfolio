@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Messenger Style Chat</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background-color: #f9f9f9;
+      margin: 0;
+    }
+
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+      width: 80%;
+      max-width: 600px;
+      margin-top: 20px;
+    }
+
+    .message {
+      position: relative;
+      max-width: 70%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 10px;
+      font-size: 16px;
+      line-height: 1.5;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    /* 왼쪽 대화 */
+    .message-left {
+      align-self: flex-start;
+      background-color: #e1f5fe;
+      border-top-left-radius: 0;
+      border-top-right-radius: 10px;
+    }
+
+    .message-left::after {
+      content: '';
+      position: absolute;
+      left: -10px;
+      top: 50%;
+      border-left: 10px solid #e1f5fe;
+      border-top: 10px solid transparent;
+      border-bottom: 10px solid transparent;
+      transform: translateY(-50%);
+    }
+
+    /* 오른쪽 대화 */
+    .message-right {
+      align-self: flex-end;
+      background-color: #fff9c4;
+      border-top-left-radius: 10px;
+      border-top-right-radius: 0;
+    }
+
+    .message-right::after {
+      content: '';
+      position: absolute;
+      right: -10px;
+      top: 50%;
+      border-right: 10px solid #fff9c4;
+      border-top: 10px solid transparent;
+      border-bottom: 10px solid transparent;
+      transform: translateY(-50%);
+    }
+
+    /* 메시지 입력 부분 */
+    .chat-input {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 20px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="chat-container">
+    <div class="message message-left">
+      <p>안녕하세요! 이 메시지는 왼쪽에서 왔어요.</p>
+    </div>
+    <div class="message message-right">
+      <p>안녕하세요! 이 메시지는 오른쪽에서 왔어요.</p>
+    </div>
+    <div class="message message-left">
+      <p>또 다른 왼쪽 메시지입니다!</p>
+    </div>
+    <div class="message message-right">
+      <p>오른쪽에서도 메시지가 왔어요.</p>
+    </div>
+  </div>
+
+  <input type="text" class="chat-input" placeholder="메시지를 입력하세요...">
+
+</body>
+
+</html>
