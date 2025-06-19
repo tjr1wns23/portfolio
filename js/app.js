@@ -70,7 +70,7 @@ createApp({
         const currentChar = this.fullText[this.typeIndex];
         this.displayedText += currentChar === "\n" ? "<br>" : currentChar;
         this.typeIndex++;
-        setTimeout(this.typeText, 10); // 80
+        setTimeout(this.typeText, 80);
       } else {
         this.typeIndex = 1000;
         window.addEventListener('wheel', this.handleWheel, { passive: false });
@@ -104,7 +104,7 @@ createApp({
       this.prjectsExplainShowArray[index] = true;
     },
     openProjectTab(i) {
-      const linkArray = ["./projects/ladder_game/project_info.html", "./projects/spinRoulette/project_info.html", "./projects/websocketTest/project_info.html", "./projects/healthDiary/project_info.html"];
+      const linkArray = ["./projects/ladder_game/project_info.html", "./projects/spinRoulette/project_info.html", "./projects/websocketChat/project_info.html", "./projects/healthDiary/project_info.html"];
       window.open(linkArray[i], '_blank');
     }
 
