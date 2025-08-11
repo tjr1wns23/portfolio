@@ -6,7 +6,7 @@ createApp({
       sectionsCount: 0,
       currentSection: 0,
       isScrolling: false,
-      skillsShowArray: Array(11).fill(false),
+      skillsShowArray: Array(15).fill(false),
       prjectsExplainShowArray: [true, false, false, false],
       projectExplainHover: [false, false, false, false],
       fullText: "안녕하세요.\n프론트엔드 개발자 장석준입니다.",
@@ -40,7 +40,8 @@ createApp({
         this.skillsShow();
       } else {
         setTimeout(() => {
-          this.skillsShowArray = Array(11).fill(false);
+          let skillCount = this.skillsShowArray.length;
+          this.skillsShowArray = Array(skillCount).fill(false);
         }, 500);
       }
     },
@@ -86,7 +87,7 @@ createApp({
         
         if (this.currentSection != 1) {
           setTimeout(() => {
-            this.skillsShowArray = Array(11).fill(false);
+            this.skillsShowArray = Array(skillsLength).fill(false);
           }, 500);
           return;
         }

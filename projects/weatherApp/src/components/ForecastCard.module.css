@@ -1,0 +1,18 @@
+.gridContainer {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(44px, auto);
+  gap: 8px;
+}
+
+.row {
+  width: 50px;
+}
+
+.cell {
+  min-height: 40px;
+}
+
+.SummaryIcon {
+  width: 50px;
+}

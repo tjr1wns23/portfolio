@@ -1,0 +1,61 @@
+.todayWrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  line-height: 1.5;
+}
+
+.todayWrap .weatherIcon {
+  height: 100px;
+  vertical-align: text-bottom;
+}
+
+.todayWrap .tempText {
+  font-size: 50px;
+  margin: 0;
+}
+
+.description {
+  margin: 0;
+  font-size: 20px;
+}
+
+.airContainer {
+  margin-top: 16px;
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.airCard {
+  background-color: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
+  min-width: 110px;
+  text-align: center;
+  transition: transform 0.2s ease;
+}
+
+.airCard:hover {
+  transform: translateY(-4px);
+}
+
+.airTitle {
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.airValue {
+  font-size: .8rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.airLevel {
+  font-size: 0.7rem;
+  margin-top: 4px;
+  color: #888;
+}

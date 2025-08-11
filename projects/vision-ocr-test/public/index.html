@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>이미지 OCR - 영역 선택 후 전송</title>
+  <script src="https://unpkg.com/vue@3"></script>
+  <style>
+    #drop-area {
+      border: 2px dashed #888;
+      padding: 20px;
+      text-align: center;
+      margin-bottom: 1rem;
+      cursor: pointer;
+      user-select: none;
+    }
+    #drop-area.dragover {
+      background-color: #eef;
+      border-color: #55f;
+    }
+    .img-order-wrap {
+      display: flex;
+      gap: 10px;
+    }
+    .img-order-wrap p {
+      display: flex;
+      border: 1px solid #000;
+      width: 20px;
+      height: 20px;
+      align-items: center;
+      justify-content: center;
+    }
+    .img-order-wrap p:hover {
+      cursor: pointer;
+    }
+    .now-order {
+      background-color: #55f;
+    }
+    img.preview {
+      max-width: 100%;
+      display: inline-block;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+    .selection-box {
+      position: absolute;
+      border: 2px dashed #3399ff;
+      pointer-events: none;
+      background-color: rgba(51, 153, 255, 0.2);
+    }
+    .image-wrapper {
+      position: relative;
+      margin-top: 10px;
+      white-space: nowrap;
+    }
+    .ocr-result-wrap {
+      display: inline-block;
+      vertical-align: top;
+      margin-left: 20px;
+    }
+    .ocr-result-wrap textarea {
+      font-family: 돋움;
+      white-space: pre-wrap;
+      font-size: 20px;
+      background: #f4f4f4;
+      display: flex;
+      padding: 10px;
+      border: 1px solid #ddd;
+      min-height: 400px;
+      overflow-y: auto;
+    }
+    .ocr-btn {
+      font-size: 20px;
+      margin: 10px auto;
+      display: block;
+      border-radius: 8px;
+    }
+    .table-wrap {
+      display: flex;
+      gap: 8px;
+    }
+    .info-table {
+      border-collapse: collapse;
+      width: 300px;
+      table-layout: fixed;
+    }
+   
+    .info-table td {
+      border: 1px solid #ccc;
+      padding: 5px;
+      text-align: center;
+    }
+    .info-table .order-td {
+      width: 24px;
+      text-align: center;
+    }
+    .table-ctl-btn {
+      white-space: nowrap;
+    }
+    .result-table {
+      border-collapse: collapse;
+      width: 600px;
+      table-layout: fixed;
+    }
+    .result-table td {
+      border: 1px solid #ccc;
+      padding: 5px;
+      text-align: center;
+    }
+    .result-table .order-td {
+      width: 24px;
+      text-align: center;
+    }
+    .cell-input {
+      width: 100%;
+      padding: 4px;
+      box-sizing: border-box;
+      font-size: 14px;
+      text-align: center;
+      font-family: sans-serif;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <h2>이미지 OCR (드래그앤드롭 + 영역 선택 후 자르기 + 서버 전송)</h2>
+
+    <div
+      id="drop-area"
+      :class="{ dragover: isDragOver }"
+      @dragover.prevent="handleDragOver"
+      @dragleave.prevent="handleDragLeave"
+      @drop.prevent="handleDrop"
+    >
+      여기에 이미지를 드래그 앤 드롭 하세요<br />
+      또는<br />
+      <input type="file" accept="image/*" @change="onFileChange" />
+    </div>
+    <div class="img-order-wrap">
+     <p
+        v-for="(n, index) in 4"
+        :key="index"
+        :class="{ 'now-order': nowImgNum === index }"
+        @click="nowImgNum = index, selectionDone = false;"
+      >
+      {{ index + 1 }}
+    </p>
+    </div>
+    <div class="image-wrapper" v-if="previewUrlArray[nowImgNum]">
+      <img 
+        :src="previewUrlArray[nowImgNum]"
+        alt="preview"
+        ref="imgRef"
+        @mousedown="startSelection"
+        @mousemove="updateSelection"
+        @mouseup="endSelection"
+        class="preview"
+        draggable="false"
+      />
+      <div
+        v-if="isSelecting || selectionDone"
+        class="selection-box"
+        :style="selectionStyle"
+      ></div>
+      <div class="ocr-result-wrap">
+        <button @click="sendToOcr" class="ocr-btn" :disabled="!selectionDone || loading">선택 영역 OCR 추출</button>
+        <div v-if="loading">OCR 처리 중...</div>
+        <textarea v-model="ocrResult" type="text" name="ocrResultText" spellcheck="false"></textarea>
+        <button @click="saveOcrToText" class="ocr-btn" type="button" spellcheck="false">save</button>
+      </div>
+    </div>
+    
+    <div class="save-wrap">
+      <div class="table-wrap">
+        <table class="info-table">
+          <tr v-for="(row, rowIndex) in tableData1" :key="rowIndex">
+            <!-- 번호 셀 -->
+            <td class="order-td">{{ rowIndex + 1 }}</td>
+            <td v-for="(cell, colIndex) in row" :key="colIndex">
+              <input
+                type="text"
+                v-model="tableData1[rowIndex][colIndex]"
+                class="cell-input"
+              />
+            </td>
+          </tr>
+        </table>
+        <table class="info-table">
+          <tr v-for="(row, rowIndex) in tableData2" :key="rowIndex">
+            <td class="order-td">{{ rowIndex + 1 }}</td>
+            <td v-for="(cell, colIndex) in row" :key="colIndex">
+              <input
+                type="text"
+                v-model="tableData2[rowIndex][colIndex]"
+                class="cell-input"
+              />
+            </td>
+          </tr>
+        </table>
+        <table class="info-table">
+          <tr v-for="(row, rowIndex) in tableData3" :key="rowIndex">
+            <td class="order-td">{{ rowIndex + 1 }}</td>
+            <td v-for="(cell, colIndex) in row" :key="colIndex">
+              <input
+                type="text"
+                v-model="tableData3[rowIndex][colIndex]"
+                class="cell-input"
+              />
+            </td>
+          </tr>
+        </table>
+        <table class="info-table">
+          <tr v-for="(row, rowIndex) in tableData4" :key="rowIndex">
+            <td class="order-td">{{ rowIndex + 1 }}</td>
+            <td v-for="(cell, colIndex) in row" :key="colIndex">
+              <input
+                type="text"
+                v-model="tableData4[rowIndex][colIndex]"
+                class="cell-input"
+              />
+            </td>
+          </tr>
+        </table>
+        <div>
+          <button type="button" class="table-ctl-btn" @click="ocrResultCal();">합산</button><br>
+          <button type="button" class="table-ctl-btn" @click="this.sumTableData.sort((a,b) => b.avg - a.avg)">높은순</button><br>
+          <button type="button" class="table-ctl-btn" @click="this.sumTableData.sort((a,b) => a.avg - b.avg)">낮은순</button>
+        </div>
+        <table class="result-table">
+          <tr v-for="(row, rowIndex) in sumTableData" :key="rowIndex">
+            <td class="order-td">{{ rowIndex + 1 }}</td>
+            <td v-for="(cell, colIndex) in row" :key="colIndex">
+              {{ sumTableData[rowIndex][colIndex] }}
+            </td>
+          </tr>
+        </table>
+      </div>
+      
+    </div>
+
+    <div class="processed-data-wrap">
+
+    </div>
+  </div>
+
+  <script>
+    Vue.createApp({
+      data() {
+        return {
+          previewUrlArray: [null, null, null, null],
+          nowImgNum: 0,
+          isDragOver: false,
+          isSelecting: false,
+          selectionDone: false,
+          startX: 0,
+          startY: 0,
+          currentX: 0,
+          currentY: 0,
+          cropRect: null,
+          selectedFile: null,
+          ocrResult: '',
+          loading: false,
+          tableData1: Array.from({ length: 17 }, () => ['', '']),
+          tableData2: Array.from({ length: 17 }, () => ['', '']),
+          tableData3: Array.from({ length: 17 }, () => ['', '']),
+          tableData4: Array.from({ length: 17 }, () => ['', '']),
+          sumTableData: [],
+        };
+      },
+      computed: {
+        selectionStyle() {
+          const x = Math.min(this.startX, this.currentX);
+          const y = Math.min(this.startY, this.currentY);
+          const width = Math.abs(this.currentX - this.startX);
+          const height = Math.abs(this.currentY - this.startY);
+          return {
+            left: x + "px",
+            top: y + "px",
+            width: width + "px",
+            height: height + "px",
+          };
+        },
+      },
+      methods: {
+        handleDragOver() {
+          this.isDragOver = true;
+        },
+        handleDragLeave() {
+          this.isDragOver = false;
+        },
+        handleDrop(e) {
+          this.isDragOver = false;
+          const file = e.dataTransfer.files[0];
+          this.loadImage(file);
+        },
+        onFileChange(e) {
+          const file = e.target.files[0];
+          this.loadImage(file);
+        },
+        loadImage(file) {
+          if (!file || !file.type.startsWith("image/")) {
+            alert("이미지 파일만 가능합니다.");
+            return;
+          }
+          this.selectedFile = file;
+          if (this.previewUrlArray[this.nowImgNum]) URL.revokeObjectURL(this.previewUrlArray[this.nowImgNum]);
+          this.previewUrlArray[this.nowImgNum] = URL.createObjectURL(file);
+          this.selectionDone = false;
+          this.ocrResult = '';
+        },
+        startSelection(event) {
+          if (!this.previewUrlArray[this.nowImgNum]) return;
+          this.isSelecting = true;
+          const rect = this.$refs.imgRef.getBoundingClientRect();
+          this.startX = event.clientX - rect.left;
+          this.startY = event.clientY - rect.top;
+          this.currentX = this.startX;
+          this.currentY = this.startY;
+          this.selectionDone = false;
+        },
+        updateSelection(event) {
+          if (!this.isSelecting) return;
+          const rect = this.$refs.imgRef.getBoundingClientRect();
+          this.currentX = Math.min(Math.max(event.clientX - rect.left, 0), rect.width);
+          this.currentY = Math.min(Math.max(event.clientY - rect.top, 0), rect.height);
+        },
+        endSelection() {
+          if (this.isSelecting) {
+            this.isSelecting = false;
+            this.selectionDone = true;
+            this.cropRect = {
+              x: Math.min(this.startX, this.currentX),
+              y: Math.min(this.startY, this.currentY),
+              width: Math.abs(this.currentX - this.startX),
+              height: Math.abs(this.currentY - this.startY),
+            };
+          }
+        },
+        sendToOcr() {
+          if (!this.cropRect || !this.previewUrlArray[this.nowImgNum]) return;
+          this.loading = true;
+          const img = this.$refs.imgRef;
+          const scaleX = img.naturalWidth / img.width;
+          const scaleY = img.naturalHeight / img.height;
+          const sx = this.cropRect.x * scaleX;
+          const sy = this.cropRect.y * scaleY;
+          const sw = this.cropRect.width * scaleX;
+          const sh = this.cropRect.height * scaleY;
+
+          const canvas = document.createElement("canvas");
+          canvas.width = sw;
+          canvas.height = sh;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, sx, sy, sw, sh, 0, 0, sw, sh);
+
+          canvas.toBlob(async (blob) => {
+            try {
+              const formData = new FormData();
+              formData.append("image", blob, "crop.png");
+
+              const res = await fetch("http://localhost:3000/api/ocr", {
+                method: "POST",
+                body: formData,
+              });
+
+              if (!res.ok) throw new Error("서버 오류: " + res.statusText);
+              const data = await res.json();
+              this.ocrResult = data.text || data.error || "인식 실패";
+            } catch (e) {
+              this.ocrResult = "OCR 요청 중 오류: " + e.message;
+            } finally {
+              this.loading = false;
+            }
+          }, "image/png");
+        },
+        saveOcrToText() {
+          const tableDataArray = [this.tableData1, this.tableData2, this.tableData3, this.tableData4];
+          let tableData = tableDataArray[this.nowImgNum];
+          let colIndex = this.ocrResult.includes(',') ? 1 : 0;
+          let infoArray = this.ocrResult.split("\n");
+          for (let i=0; i<17; i++) {
+            tableData[i][colIndex] = infoArray[i];
+          }
+        },
+        ocrResultCal() {
+          let sumArray1 = [...this.tableData1, ...this.tableData2];
+          let sumArray2 = [...this.tableData3, ...this.tableData4];
+
+          function parseNumber(str) {
+            return Number(str.replace(/,/g, ''));
+          }
+
+          function mergeScores(a, b) {
+            const map1 = new Map();
+            const map2 = new Map();
+
+            a.forEach(([name, scoreStr]) => {
+              map1.set(name, parseNumber(scoreStr));
+            })
+
+            b.forEach(([name, scoreStr]) => {
+              map2.set(name, parseNumber(scoreStr));
+            })
+
+            const allNames = new Set([...map1.keys(), ...map2.keys()]);
+            const result = [];
+
+            allNames.forEach((name) => {
+              const score1 = map1.get(name) ?? null
+              const score2 = map2.get(name) ?? null
+
+              const avg = score1 !== null && score2 !== null
+              ? (score1 + score2) / 2
+              : score1 ?? score2
+
+              result.push({
+                name,
+                score1,
+                score2,
+                avg,
+                status: score1 !== null && score2 !== null ? '2회' : '1회'
+              })
+            })
+            result.sort((a,b) => b.avg - a.avg)
+
+            return result
+          }
+          this.sumTableData = mergeScores(sumArray1, sumArray2);
+          console.log(this.sumTableData);
+
+        }
+      },
+    }).mount("#app");
+  </script>
+</body>
+</html>

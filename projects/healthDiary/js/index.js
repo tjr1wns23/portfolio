@@ -7,31 +7,31 @@ const app = Vue.createApp({
                     name: "아놀드 슈워제네거",
                     imageURL: "css/images/Arnold.webp",
                     quote: "The last three or four reps is what makes the muscle grow.",
-                    quoteKorean: "근육을 키우는 건 마지막 세네 번의 반복입니다."
+                    quoteKorean: "근육을 키우는 건 마지막 세네 번의 반복이다."
                 },
                 {
                     name: "로니 콜먼",
                     imageURL: "css/images/Ronald.jpg",
-                    quote: "Everybody wants to be a bodybuilder, but don’t nobody wanna lift no heavy-ass weights.",
-                    quoteKorean: "모두가 보디빌더가 되고 싶어 하지만, 아무도 무거운 중량을 들고 싶어하지 않아요."
+                    quote: "That is when I squatted that 800 lbs I would do four reps instead of two.",
+                    quoteKorean: "(가장 후회하는것은) 스쾃 800파운드를 4번할 수 있었는데 2번밖에 하지 못한 것."
                 },
                 {
                     name: "제이 커틀러",
                     imageURL: "css/images/Cutler.webp",
                     quote: "Success is usually the culmination of controlling failure.",
-                    quoteKorean: "성공은 보통 실패를 통제하는 것의 결실입니다."
+                    quoteKorean: "성공은 보통 실패를 통제하는 것의 결실이다."
                 },
                 {
                     name: "필 히스",
                     imageURL: "css/images/Phillip.jpg",
                     quote: "The mind always fails first, not the body.",
-                    quoteKorean: "먼저 실패하는 건 몸이 아니라 마음입니다."
+                    quoteKorean: "먼저 실패하는 건 몸이 아니라 마음이다."
                 },
                 {
                     name: "애디 홀",
                     imageURL: "css/images/addie.webp",
                     quote: "Pain is temporary. Quitting lasts forever.",
-                    quoteKorean: "고통은 잠시지만, 포기는 영원합니다."
+                    quoteKorean: "고통은 잠시지만, 포기는 영원하다."
                 }
             ],
             randomQuote: "",
