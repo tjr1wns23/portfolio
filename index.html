@@ -85,8 +85,7 @@
               <span class="skill-explain">사용자 중심의 인터페이스 구현을 위해 React의 기본 개념과 컴포넌트 기반 개발 방식을 학습했습니다.</span>
             </div>
             <div class="skill-explain-wrap" :class="skillsShowArray[7] == 1 ? 'skill-card-animation' : ''">
-              <span class="icon-txt"><img src="css/icons/vite.svg" class="skill-icon"
-                  alt="vite SVG image">vite</span>
+              <span class="icon-txt"><img src="css/icons/vite.svg" class="skill-icon" alt="vite SVG image">vite</span>
               <span class="skill-explain">vite를 사용하여 react, Vue와 TypeScript 기반의 프로젝트 환경을 구성했습니다.</span>
             </div>
           </div>
@@ -137,42 +136,40 @@
 
     <section class="board-wrap">
       <h2 class="page-title">개인 프로젝트</h2>
-      <div class="personal-project-wrap">
-        <div class="project-explain-wrap">
-          <article v-show="prjectsExplainShowArray[0]" class="explain-box">
-            <video src="./projects/ladder_game/pf_intro.mp4" style="width: inherit;" muted autoplay loop></video>
-          </article>
-          <article v-show="prjectsExplainShowArray[1]" class="explain-box">
-            <video src="./projects/spinRoulette/pf_intro.mp4" style="width: inherit;" muted autoplay loop></video>
-          </article>
-          <article v-show="prjectsExplainShowArray[2]" class="explain-box">
-            <video src="./projects/websocketChat/pf_intro.mkv" style="width: inherit;" muted autoplay loop></video>
-          </article>
-          <article v-show="prjectsExplainShowArray[3]" class="explain-box">
-            <video src="./projects/healthDiary/pf_intro.mp4" style="width: inherit;" muted autoplay loop></video>
-          </article>
-        </div>
-        <div class="projects-wrap">
-          <article class="box" @mouseenter="projectExplainChange(0)" @mouseleave="projectExplainHover[0] = false"
-            @click="openProjectTab(0);">
-            사다리게임
-            <p class="arrow" :class="{ 'arrow-show': projectExplainHover[0] }">→</p>
-          </article>
-          <article class="box" @mouseenter="projectExplainChange(1)" @mouseleave="projectExplainHover[1] = false"
-            @click="openProjectTab(1);">룰렛 돌리기
-            <p class="arrow" :class="{ 'arrow-show': projectExplainHover[1] }">→</p>
-          </article>
-          <article class="box" @mouseenter="projectExplainChange(2)" @mouseleave="projectExplainHover[2] = false"
-            @click="openProjectTab(2);">웹소켓 채팅
-            <p class="arrow" :class="{ 'arrow-show': projectExplainHover[2] }">→</p>
-          </article>
-          <article class="box" @mouseenter="projectExplainChange(3)" @mouseleave="projectExplainHover[3] = false"
-            @click="openProjectTab(3);">운동일지
-            <p class="arrow" :class="{ 'arrow-show': projectExplainHover[3] }">→</p>
-          </article>
+      <section class="diagram" aria-label="interactive diagram">
+        <div class="canvas" ref="canvas">
+          <svg class="connector" ref="connector" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+            <line v-for="(line, idx) in connectorLines" :key="idx" :x1="line.x1" :y1="line.y1" :x2="line.x2"
+              :y2="line.y2" stroke="#ccc" stroke-width="2" />
+          </svg>
+
+          <div aria-hidden="true">
+            <button v-for="(p, i) in projects" :key="p.id" class="personal-project-node" :aria-label="p.title"
+              :style="getNodeStyle(i)" @click="onClickNode(p.link)" @mouseenter="showPreview(p)"
+              @focus="showPreview(p)">
+              {{ p.title }}
+            </button>
+          </div>
+          <p class="p-project-node-guide">클릭하시면 프로젝트로 이동할 수 있습니다.</p>
         </div>
 
-      </div>
+        <!-- preview panel -->
+        <aside class="preview" aria-live="polite" :style="{background: `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url(${preview.image}) center/cover no-repeat`}">
+          <div class="shot">
+            <div>
+              <h3>{{ preview.title }}</h3>
+            </div>
+          </div>
+          <div>
+            <div class="meta">
+              <span class="p-project-info">
+                {{ preview.tags?.join(' · ') || '웹 · Vue · React' }}
+              </span>
+            </div>
+            <p class="p-project-info">{{ preview.desc || '노드에 마우스를 올리면 한 줄 설명과 스크린샷이 나옵니다. 클릭하면 아래 섹션으로 스크롤 됩니다.' }}</p>
+          </div>
+        </aside>
+      </section>
     </section>
 
     <section class="board-wrap">
@@ -211,7 +208,8 @@
             <span class="label">웹 뷰 개발</span>
             <h2>퀴즈 혼자풀기 개발</h2>
             <p>기간: 24.03 ~ 25.03</p>
-            <p>자사 앱 콘텐츠 강화를 위해 퀴즈 혼자풀기 기능을 웹뷰 기반으로 구현하여 앱의 재방문율을 높이고 사용자 참여를 유도하였습니다. 프론트엔드 개발 전반을 담당하며 UI 구현부터 인터랙션 처리, 서버 연동까지 주도적으로 개발하였습니다.</p>
+            <p>자사 앱 콘텐츠 강화를 위해 퀴즈 혼자풀기 기능을 웹뷰 기반으로 구현하여 앱의 재방문율을 높이고 사용자 참여를 유도하였습니다. 프론트엔드 개발 전반을 담당하며 UI 구현부터 인터랙션 처리,
+              서버 연동까지 주도적으로 개발하였습니다.</p>
           </div>
 
           <div class="history-card">
@@ -225,7 +223,8 @@
             <span class="label">서버 운영</span>
             <h2>Ubuntu 서버 구축 및 관리</h2>
             <p>기간: 매년 5월 ~ 6월</p>
-            <p>Ubuntu 버전 업데이트나 서버 교체 시 서버를 새롭게 구축하고, 보안 패치 및 성능 최적화를 통해 안정적인 시스템 운영을 담당하였습니다. 또한 BIND9를 활용해 도메인 네임 시스템(DNS)을 구성하고, 클라이언트 요청에 따른 URL 관리를 지원하며 네트워크 안정성 향상에도 기여하였습니다.</p>
+            <p>Ubuntu 버전 업데이트나 서버 교체 시 서버를 새롭게 구축하고, 보안 패치 및 성능 최적화를 통해 안정적인 시스템 운영을 담당하였습니다. 또한 BIND9를 활용해 도메인 네임
+              시스템(DNS)을 구성하고, 클라이언트 요청에 따른 URL 관리를 지원하며 네트워크 안정성 향상에도 기여하였습니다.</p>
           </div>
 
         </div>
@@ -238,7 +237,7 @@
             포트폴리오를 봐주셔서 감사합니다!
           </div>
         </transition>
-        <p style="font-size: 1.2rem; color: #555; line-height: 1.6;">
+        <p class="thanks-text-2">
           이 포트폴리오는 제가 직접 기획하고 개발한 결과물입니다.<br>
           끝까지 봐주셔서 진심으로 감사드립니다.
         </p>

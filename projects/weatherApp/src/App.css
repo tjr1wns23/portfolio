@@ -45,6 +45,31 @@
   width: 100%;
 }
 
+.title-wrap {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.title-wrap h1 {
+  vertical-align: baseline;
+}
+
+.title-wrap select {
+  font-size: 3.2em;
+  background: none;
+  border: none;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  vertical-align: baseline;
+  line-height: 1.2;
+}
+
+.title-wrap select option {
+  font-size: 14px;
+}
+
 .card {
   padding: 2em;
 }

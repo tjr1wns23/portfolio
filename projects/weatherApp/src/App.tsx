@@ -56,19 +56,27 @@ function App() {
     }
   };
 
+  const now = new Date();
+  const month = String(now.getMonth() + 1).padStart(2, "0"); // 0~11이므로 +1
+  const day = String(now.getDate()).padStart(2, "0");
+
   return (
     <div className="App">
-      <h1>{cityNames[city]} 날씨정보</h1>
+      <div className="title-wrap">
+        <select name="city" value={city} onChange={handleCityChange}>
+          <option value="Seoul">{cityNames['Seoul']}</option>
+          <option value="Daejeon">{cityNames['Daejeon']}</option>
+          <option value="Busan">{cityNames['Busan']}</option>
+          <option value="Incheon">{cityNames['Incheon']}</option>
+        </select>
+        <h1>날씨정보</h1>
+      </div>
+      <div>{month}/{day}</div>
 
-      <select name="city" value={city} onChange={handleCityChange}>
-        <option value="Seoul">{cityNames['Seoul']}</option>
-        <option value="Daejeon">{cityNames['Daejeon']}</option>
-        <option value="Busan">{cityNames['Busan']}</option>
-        <option value="Incheon">{cityNames['Incheon']}</option>
-      </select>
       <div className="contents-wrap">
+
         <div onClick={handlePrev} className="scroll-btn left">&lt;</div>
-        
+
         <nav className="scroll-container" ref={containerRef}>
 
           {error && <p>Error: {error}</p>}

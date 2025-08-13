@@ -20,7 +20,7 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
-  ChartDataLabels // 여기에 플러그인 등록
+  ChartDataLabels
 );
 
 interface Props {
@@ -87,11 +87,11 @@ const TodayChart: React.FC<Props> = ({ chartData }) => {
         },
         grid: {
           drawTicks: false,
-          display: false,      // ← 격자선 제거
-          drawOnChartArea: false, // ← 이게 핵심!!
+          display: false,
+          drawOnChartArea: false,
         },
         border: {
-          display: false, // ← y축 왼쪽선 제거
+          display: false,
         },
       },
       x: {
@@ -101,7 +101,7 @@ const TodayChart: React.FC<Props> = ({ chartData }) => {
         grid: {
           drawTicks: false,
           display: false,
-          drawOnChartArea: false, // x축 격자선 제거
+          drawOnChartArea: false,
         },
       },
     },

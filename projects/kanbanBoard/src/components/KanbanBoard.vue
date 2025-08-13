@@ -20,7 +20,7 @@ const columns = ref<ColumnType[]>([
     id: 'todo',
     title: 'To Do',
     tasks: [
-      { id: 1, title: 'react 시작하기' },
+      { id: 1, title: 'react 공부하기' },
       { id: 2, title: '포트폴리오 디자인하기' },
       { id: 3, title: 'github push 하기' },
     ],
@@ -60,7 +60,6 @@ function handleMoveTask(task: Task, toColumnId: string, toIndex: number) {
 
 function addTask(columnId: string, text: string): void {
   const targetColumn = columns.value.find((col) => col.id === columnId);
-
   
   targetColumn?.tasks.push({id: nextTaskId, title: text});
   nextTaskId++;

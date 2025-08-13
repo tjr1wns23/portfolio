@@ -1,0 +1,262 @@
+<!--
+Interactive Diagram Portfolio - Single HTML file
+- 중앙에 'ME' 노드, 주변에 7개 프로젝트 노드 방사형 배치
+- 노드 Hover: 미리보기 패널에 스크린샷(플레이스홀더) + 한줄 요약 표시
+- 노드 Click: 페이지 내 섹션(project-1..7)으로 스무스 스크롤 이동
+- Vanilla JS 사용 (의존성 없음)
+- 반응형: 작은 화면에서는 격자 또는 세로타임라인으로 대체
+-->
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Interactive Diagram - Portfolio</title>
+  <style>
+    :root{
+      --bg:#0f1724; --card:#0b1220; --accent:#7c3aed; --muted:#94a3b8; --glass: rgba(255,255,255,0.04);
+      --w:1000px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family:Inter, 'Noto Sans KR', system-ui, -apple-system, 'Segoe UI', Roboto; background: radial-gradient(1000px 600px at 10% 10%, rgba(124,58,237,0.08), transparent), var(--bg); color:#e6eef8;
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+    }
+    .wrap{max-width:var(--w); margin:40px auto; padding:24px}
+
+    header{display:flex; align-items:center; gap:16px; margin-bottom:18px}
+    header h1{font-size:20px; margin:0}
+    header p{margin:0; color:var(--muted); font-size:13px}
+
+    /* DIAGRAM AREA */
+    .diagram{
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.03));
+      border-radius:14px; padding:28px; position:relative; overflow:hidden; display:flex; gap:20px;
+    }
+    .canvas{
+      flex:1 1 600px; min-height:420px; display:grid; place-items:center; position:relative;
+    }
+    .center-node{
+      width:110px; height:110px; border-radius:999px; background:linear-gradient(135deg,var(--accent), #4c1d95); display:grid; place-items:center; font-weight:700; box-shadow:0 8px 30px rgba(124,58,237,0.18);
+      cursor:default; transform:translateZ(0);
+    }
+    .center-node small{display:block; font-weight:600; font-size:13px; opacity:0.95}
+
+    /* svg lines overlay */
+    svg.connector{position:absolute; inset:0; width:100%; height:100%; pointer-events:none}
+
+    /* node styles */
+    .node{
+      width:84px; height:84px; border-radius:50%; background:var(--glass); display:grid; place-items:center; text-align:center; padding:6px; cursor:pointer; transition:transform .28s cubic-bezier(.2,.9,.2,1), box-shadow .2s; backdrop-filter: blur(6px);
+      border:1px solid rgba(255,255,255,0.04);
+    }
+    .node:hover{transform:translateY(-10px) scale(1.06); box-shadow:0 10px 30px rgba(0,0,0,0.6)}
+    .node .title{font-size:12px; color:#fff}
+    .node .sub{font-size:10px; color:var(--muted); margin-top:4px}
+
+    /* preview panel */
+    .preview{
+      width:340px; min-width:240px; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.05)); border-radius:12px; padding:14px; display:flex; flex-direction:column; gap:12px;
+    }
+    .preview .shot{width:100%; height:180px; border-radius:8px; background:linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); display:flex; align-items:center; justify-content:center; color:var(--muted); font-size:13px; border:1px solid rgba(255,255,255,0.03)}
+    .preview h3{margin:0; font-size:15px}
+    .preview p{margin:0; color:var(--muted); font-size:13px}
+    .preview .meta{display:flex; gap:8px; align-items:center; margin-top:6px}
+    .btn{display:inline-block; padding:8px 12px; border-radius:8px; background:linear-gradient(90deg,var(--accent), #5b21b6); color:white; text-decoration:none; font-weight:600; font-size:13px}
+
+    /* Project sections */
+    .projects{margin-top:22px; display:grid; gap:18px}
+    .project{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.03)); padding:18px; border-radius:12px; display:grid; grid-template-columns:1fr 220px; gap:12px; align-items:center}
+    .project h2{margin:0 0 6px 0}
+    .project p{margin:0; color:var(--muted)}
+    .proj-shot{height:120px; border-radius:8px; background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(0,0,0,0.03)); display:flex; align-items:center; justify-content:center; color:var(--muted)}
+
+    /* small screens: stack and show list instead of radial */
+    @media (max-width:880px){
+      .diagram{flex-direction:column}
+      .canvas{order:2}
+      .preview{order:1; width:100%}
+      .project{grid-template-columns:1fr}
+      svg.connector{display:none}
+      .center-node{width:88px;height:88px}
+      .node{width:64px;height:64px}
+    }
+
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>프로젝트 인터랙티브 다이어그램 시안</h1>
+      </div>
+    </header>
+
+    <section class="diagram" aria-label="interactive diagram">
+      <div class="canvas" id="canvas">
+        <!-- SVG for wiring lines -->
+        <svg class="connector" id="connector" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"></svg>
+
+        <!-- center node -->
+        <div class="center-node" id="center"> 
+        
+        </div>
+
+        <!-- nodes container (absolute positioned via JS) -->
+        <div id="nodes" aria-hidden="true"></div>
+      </div>
+
+      <!-- preview panel -->
+      <aside class="preview" id="preview" aria-live="polite">
+        <div class="shot" id="preview-shot">프로젝트 미리보기</div>
+        <div>
+          <h3 id="preview-title">프로젝트 선택</h3>
+          <p id="preview-desc">노드에 마우스를 올리면 한 줄 설명과 스크린샷이 나옵니다. 클릭하면 아래 섹션으로 스크롤 됩니다.</p>
+          <div class="meta">
+            <span id="preview-tags" style="color:var(--muted); font-size:13px">태그: 웹 · Vue · React</span>
+            <span style="flex:1"></span>
+            <a href="#projects" class="btn" id="preview-open">모두 보기</a>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+  </div>
+
+  <script>
+    /* DATA FOR 7 PROJECTS */
+    const projects = [
+      {id:1, title:'포트폴리오 사이트', desc:'반응형 SPA, 애니메이션과 프로젝트 미리보기 포함', tags:['Vue','CSS','Deploy'], link:'#project-1'},
+      {id:2, title:'헬스 저널 앱', desc:'Workout 기록 기능과 그래프, 로컬 저장', tags:['Vue','LocalStorage'], link:'#project-2'},
+      {id:3, title:'날씨 앱', desc:'OpenWeather API를 사용한 예측 인터페이스', tags:['React','API'], link:'#project-3'},
+      {id:4, title:'채용 포털', desc:'검색·필터·지원 흐름 설계', tags:['Node','Postgres'], link:'#project-4'},
+      {id:5, title:'맵 기반 검색', desc:'지도 상의 POI 탐색 인터페이스', tags:['Map','UX'], link:'#project-5'},
+      {id:6, title:'게임 데이터 툴', desc:'게임 아이템 가격 조회 및 분석', tags:['Tooling','Scraper'], link:'#project-6'},
+      {id:7, title:'디자인 시스템', desc:'컴포넌트 라이브러리와 토큰', tags:['Design','Figma'], link:'#project-7'}
+    ];
+
+    /* RENDER NODES AROUND CENTER - RADIAL LAYOUT */
+    const canvas = document.getElementById('canvas');
+    const nodesWrap = document.getElementById('nodes');
+    const center = document.getElementById('center');
+    const svg = document.getElementById('connector');
+
+    // make nodes
+    function createNodes(){
+      nodesWrap.innerHTML='';
+      svg.innerHTML='';
+      const rect = canvas.getBoundingClientRect();
+      const cx = rect.width/2; const cy = rect.height/2;
+      const radius = Math.min(rect.width, rect.height)/2 - 120; // outer radius
+
+      projects.forEach((p,i)=>{
+        const angle = (i/ projects.length) * Math.PI*2 - Math.PI/2; // start from top
+        const nx = cx + Math.cos(angle)*radius;
+        const ny = cy + Math.sin(angle)*radius;
+
+        // create node element
+        const node = document.createElement('button');
+        node.className='node';
+        node.setAttribute('aria-label', p.title);
+        node.style.position='absolute';
+        node.style.left=(nx - 42)+'px';
+        node.style.top=(ny - 42)+'px';
+        node.innerHTML = `<div class="title">${p.title}</div><div class="sub">${p.tags[0]||''}</div>`;
+        node.dataset.pid = p.id;
+
+        // click -> scroll to project section
+        node.addEventListener('click', ()=>{
+          const target = document.querySelector(p.link);
+          if(target){ target.scrollIntoView({behavior:'smooth', block:'start'}); flash(target); }
+          // also briefly mark active in preview
+          showPreview(p);
+        });
+
+        // hover -> preview
+        node.addEventListener('mouseenter', ()=> showPreview(p) );
+        node.addEventListener('focus', ()=> showPreview(p) );
+
+        nodesWrap.appendChild(node);
+
+        // draw line from center to node using SVG
+        // get center coords relative to svg
+        const centerRect = center.getBoundingClientRect();
+        const nodeRect = node.getBoundingClientRect();
+        const svgRect = svg.getBoundingClientRect();
+        const sx = (centerRect.left + centerRect.width/2) - svgRect.left;
+        const sy = (centerRect.top + centerRect.height/2) - svgRect.top;
+        const ex = (nodeRect.left + nodeRect.width/2) - svgRect.left;
+        const ey = (nodeRect.top + nodeRect.height/2) - svgRect.top;
+
+        // create a smooth curved path
+        const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+        const dx = (ex - sx)*0.6;
+        const dy = (ey - sy)*0.1;
+        const d = `M ${sx},${sy} C ${sx+dx},${sy+dy} ${ex-dx},${ey-dy} ${ex},${ey}`;
+        path.setAttribute('d', d);
+        path.setAttribute('stroke', 'rgba(255,255,255,0.06)');
+        path.setAttribute('stroke-width','1.6');
+        path.setAttribute('fill','none');
+        svg.appendChild(path);
+      });
+
+    }
+
+    // show preview details
+    const previewShot = document.getElementById('preview-shot');
+    const previewTitle = document.getElementById('preview-title');
+    const previewDesc = document.getElementById('preview-desc');
+    const previewTags = document.getElementById('preview-tags');
+    const previewOpen = document.getElementById('preview-open');
+
+    function showPreview(p){
+      previewTitle.textContent = p.title;
+      previewDesc.textContent = p.desc;
+      previewTags.textContent = '태그: '+p.tags.join(', ');
+      previewOpen.href = p.link;
+      // simple placeholder artwork (can replace with real screenshot)
+      previewShot.textContent = '';
+      previewShot.style.background = `linear-gradient(135deg, rgba(255,255,255,0.02), rgba(0,0,0,0.04))`;
+      // draw a faux mini card inside shot
+      previewShot.innerHTML = `<div style="text-align:center; color:var(--muted)"><div style="font-weight:700; margin-bottom:6px">${p.title}</div><div style="font-size:12px">미리보기 이미지</div></div>`;
+
+      // subtle focus animation
+      previewShot.animate([{transform:'translateY(6px)', opacity:0.9},{transform:'translateY(0)', opacity:1}], {duration:280, easing:'cubic-bezier(.2,.9,.2,1)'});
+    }
+
+    // flash target section
+    function flash(el){
+      el.animate([{boxShadow:'0 0 0 0 rgba(124,58,237,0.0)'},{boxShadow:'0 0 0 8px rgba(124,58,237,0.06)'},{boxShadow:'0 0 0 0 rgba(124,58,237,0)'}], {duration:900});
+    }
+
+    // initial render + on resize
+    function resizeAndRender(){
+      createNodes();
+    }
+
+    window.addEventListener('load', ()=>{
+      // small delay to ensure sizes calculated
+      setTimeout(()=>{ resizeAndRender(); }, 40);
+      // default preview
+      showPreview(projects[0]);
+    });
+    window.addEventListener('resize', ()=>{ resizeAndRender(); });
+
+    // accessibility: keyboard navigation (arrow keys move between nodes)
+    document.addEventListener('keydown', (e)=>{
+      const focus = document.activeElement;
+      const nodes = Array.from(document.querySelectorAll('.node'));
+      const idx = nodes.indexOf(focus);
+      if(idx===-1) return;
+      if(e.key === 'ArrowRight' || e.key === 'ArrowDown'){
+        const next = nodes[(idx+1)%nodes.length]; next.focus(); e.preventDefault();
+      }
+      if(e.key === 'ArrowLeft' || e.key === 'ArrowUp'){
+        const prev = nodes[(idx-1+nodes.length)%nodes.length]; prev.focus(); e.preventDefault();
+      }
+    });
+
+  </script>
+</body>
+</html>
